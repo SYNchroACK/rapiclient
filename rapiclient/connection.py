@@ -28,7 +28,7 @@ class RESTResource(object):
             return self._store["base_url"]
         params = []
         for key, value in args.items():
-            params += '{0}={1}'.format(key, value)
+            params.append('{0}={1}'.format(key, value))
         return self._store["base_url"] + "?" + "&".join(params)
 
     def get(self, **kwargs):
