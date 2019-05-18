@@ -23,10 +23,11 @@ settings = {
 
 credentials = {
     'email': 'admin@example.com',
-    'username': 'admin  ',
+    'username': 'admin',
     'password': '<password>',
 }
 
+token = "<token>"
 
 api = RESTAPI(settings)
 
@@ -48,7 +49,7 @@ print("==================================")
 print("")
 print("User Login (token)")
 api = RESTAPI(settings)
-api.token = "<token>"
+api.token = token
 print("==================================")
 print("")
 print("GET api.collections.get()")
@@ -101,6 +102,18 @@ print("")
 print("")
 print("==================================")
 print("")
+print("GET api.collections.get(extra={ ... })")
+print("")
+test = api.collections.get(extra={
+    'codename': response.data['codename']
+})
+print("Response Ok: %s" % test.ok)
+print("Response Status: %s" % test.status)
+print("Response Data: %s" % test.data)
+print("")
+print("")
+print("==================================")
+print("")
 print("DELETE api.collections(<valid-key>).delete()")
 print("")
 response = api.collections(response.data["codename"]).delete()
@@ -130,4 +143,3 @@ print("Response Data: %s" % response.data)
 print("")
 print("")
 print("==================================")
-

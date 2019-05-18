@@ -60,9 +60,9 @@ class RESTResource(object):
 
 class RESTAPI(object):
 
-    base_url = None
-    settings = None
-    token = None
+    __base_url = None
+    __settings = None
+    __token = None
     
 
     def __init__(self, settings={}):
@@ -70,52 +70,52 @@ class RESTAPI(object):
             if option not in settings:
                 settings[option] = DEFAULT_OPTIONS[option]
 
-        self.settings = settings
+        self.__settings = settings
 
-        if self.settings['PREFIX_PATH'] == DEFAULT_OPTIONS['PREFIX_PATH']:
-            self.base_url = self.settings['DOMAIN']
+        if self.__settings['PREFIX_PATH'] == DEFAULT_OPTIONS['PREFIX_PATH']:
+            self.__base_url = self.__settings['DOMAIN']
         else:
-            self.base_url = utils.join_url([self.settings['DOMAIN'], self.settings['PREFIX_PATH']])
+            self.__base_url = utils.join_url([self.__settings['DOMAIN'], self.__settings['PREFIX_PATH']])
 
     def __getattr__(self, item):
         if item.startswith("_"):
             raise AttributeError(item)
 
         kwargs = {
-            'token': self.token,
-            'token_format': self.settings['TOKEN_FORMAT'],
-            'base_url': utils.join_url([self.base_url, item+"/" ]),
+            'token': self.__token,
+            'token_format': self.__settings['TOKEN_FORMAT'],
+            'base_url': utils.join_url([self.__base_url, item+"/" ]),
         }
         return RESTResource(**kwargs)
 
-    def token(self, token: str):
-        self.token = token
+    def token(self, value: str):
+        self.__token = value
 
     def login(self, credentials: dict):
         if credentials is None:
             raise Exception("Credentials not provided.")
 
-        url = utils.join_url([self.base_url, self.settings['LOGIN_PATH']])
+        url = utils.join_url([self.__base_url, self.__settings['LOGIN_PATH']])
         data = json.dumps(credentials)
 
-        resp = requests.post(url, data=data, headers=self.settings['HEADERS'])
+        resp = requests.post(url, data=data, headers=self.__settings['HEADERS'])
         response = utils.process_response(resp)
 
         if response.status != 200:
             response.ok = False
             return response
 
-        if self.settings['TOKEN_KEY'] not in response.data:
+        if self.__settings['TOKEN_KEY'] not in response.data:
             raise Exception("Token not found on response")
 
-        self.token = response.data[self.settings['TOKEN_KEY']]
+        self.__token = response.data[self.__settings['TOKEN_KEY']]
         return response
 
     def logout(self):
-        url = utils.join_url([self.base_url, self.settings['LOGOUT_PATH']])
+        url = utils.join_url([self.__base_url, self.__settings['LOGOUT_PATH']])
 
-        headers = self.settings['HEADERS']
-        headers['Authorization'] = self.settings['TOKEN_FORMAT'].format(token=self.token)
+        headers = self.__settings['HEADERS']
+        headers['Authorization'] = self.__settings['TOKEN_FORMAT'].format(token=self.__token)
 
         resp = requests.post(url, headers=headers)
         response = utils.process_response(resp)
@@ -124,6 +124,6 @@ class RESTAPI(object):
             response.ok = False
             return response
 
-        self.token = None
+        self.__token = None
         return response
 

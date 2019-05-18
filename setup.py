@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='rapiclient',
-    version='1.0.0',
+    version='1.0.1',
     description='Python client for a RESTFULL API (e.g. Django REST Framework)',
     url='https://github.com/synchroack/rapiclient',
     author='SYNchroACK',
