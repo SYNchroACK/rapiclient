@@ -7,7 +7,8 @@ DEFAULT_OPTIONS = {
     'TOKEN_FORMAT': 'Token {token}',
     'HEADERS': {
         'Content-Type': 'application/json'
-    }
+    },
+    'VERIFY_SSL': True
 }
 
 # This import MUST be in the end of the file

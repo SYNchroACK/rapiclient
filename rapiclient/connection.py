@@ -35,26 +35,26 @@ class RESTResource(object):
         args = None
         if 'extra' in kwargs:
             args = kwargs['extra']
-        resp = requests.get(self.__url(args), headers=self.__header())
+        resp = requests.get(self.__url(args), headers=self.__header(), verify=self._store['verify_ssl'])
         return utils.process_response(resp)
 
     def post(self, data=None, **kwargs):
         payload = json.dumps(data) if data else None
-        resp = requests.post(self.__url(), data=payload, headers=self.__header())
+        resp = requests.post(self.__url(), data=payload, headers=self.__header(), verify=self._store['verify_ssl'])
         return utils.process_response(resp)
 
     def patch(self, data=None, **kwargs):
         payload = json.dumps(data) if data else None
-        resp = requests.patch(self.__url(), data=payload, headers=self.__header())
+        resp = requests.patch(self.__url(), data=payload, headers=self.__header(), verify=self._store['verify_ssl'])
         return utils.process_response(resp)
 
     def put(self, data=None, **kwargs):
         payload = json.dumps(data) if data else None
-        resp = requests.put(self.__url(), data=payload, headers=self.__header())
+        resp = requests.put(self.__url(), data=payload, headers=self.__header(), verify=self._store['verify_ssl'])
         return utils.process_response(resp)
 
     def delete(self, **kwargs):
-        resp = requests.delete(self.__url(), headers=self.__header())
+        resp = requests.delete(self.__url(), headers=self.__header(), verify=self._store['verify_ssl'])
         return utils.process_response(resp)
 
 
@@ -85,6 +85,7 @@ class RESTAPI(object):
             'token': self.__token,
             'token_format': self.__settings['TOKEN_FORMAT'],
             'base_url': utils.join_url([self.__base_url, item+"/" ]),
+            'verify_ssl': self.__settings['VERIFY_SSL']
         }
         return RESTResource(**kwargs)
 
@@ -98,7 +99,7 @@ class RESTAPI(object):
         url = utils.join_url([self.__base_url, self.__settings['LOGIN_PATH']])
         data = json.dumps(credentials)
 
-        resp = requests.post(url, data=data, headers=self.__settings['HEADERS'])
+        resp = requests.post(url, data=data, headers=self.__settings['HEADERS'], verify=self._store['verify_ssl'])
         response = utils.process_response(resp)
 
         if response.status != 200:
@@ -117,7 +118,7 @@ class RESTAPI(object):
         headers = self.__settings['HEADERS']
         headers['Authorization'] = self.__settings['TOKEN_FORMAT'].format(token=self.__token)
 
-        resp = requests.post(url, headers=headers)
+        resp = requests.post(url, headers=headers, verify=self._store['verify_ssl'])
         response = utils.process_response(resp)
         
         if response.status_code != 204:
